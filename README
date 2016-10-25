@@ -14,17 +14,17 @@ years appears, this is an inclusive range that applies to every year
 in the range. For example: 2015-2018 represents the years 2015, 2016,
 2017, and 2018.
 
-This file is part of libobnetwork.
+This file is part of TerraGTK.
 
-libobnetwork is free software: you can redistribute it and/or modify
+TerraGTK is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-libobnetwork is distributed in the hope that it will be useful,
+TerraGTK is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Lesser General Public License for more details.
 
 You should have received a copy of the Lesser GNU General Public License
-along with libobnetwork.  If not, see <https://www.gnu.org/licenses/>.
+along with TerraGTK.  If not, see <https://www.gnu.org/licenses/>.
