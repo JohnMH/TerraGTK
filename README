@@ -1,0 +1,30 @@
+TerraGTK
+
+This directory tree contains TerraGTK, a binding of GTK+ 3.
+
+You may encounter bugs in this library. If you do, please report them.
+Bug reports are very valuable to this project, since they allow
+us to notice and fix problems we don't have on our machines, or in code
+we don't use often. Please submit them on https://bugs.openblox.org/
+
+NOTE ON COPYRIGHT YEARS
+
+In all copyright notices, unless otherwise stated, when a range of
+years appears, this is an inclusive range that applies to every year
+in the range. For example: 2015-2018 represents the years 2015, 2016,
+2017, and 2018.
+
+This file is part of libobnetwork.
+
+libobnetwork is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+libobnetwork is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the Lesser GNU General Public License
+along with libobnetwork.  If not, see <https://www.gnu.org/licenses/>.
