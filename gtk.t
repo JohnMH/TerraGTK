@@ -21,7 +21,7 @@ local plat;
 if ffi.os == "Linux" then
 	plat = require("./platform/linux");
 else
-	error("OS unknown");
+	error("OS unknown: " .. ffi.os);
 end
 --TODO: Mac OS X, Windows
 
@@ -98,7 +98,22 @@ end
 
 GTK.GObject = GObject;
 
-GdkWindow = {};
+--Gdk
+local GdkGravity = {};
+GdkGravity.NorthWest = C.GDK_GRAVITY_NORTH_WEST;
+GdkGravity.North = C.GDK_GRAVITY_NORTH;
+GdkGravity.NorthEast = C.GDK_GRAVITY_NORTH_EAST;
+GdkGravity.West = C.GDK_GRAVITY_WEST;
+GdkGravity.Center = C.GDK_GRAVITY_CENTER;
+GdkGravity.East = C.GDK_GRAVITY_EAST;
+GdkGravity.SouthWest = C.GDK_GRAVITY_SOUTH_WEST;
+GdkGravity.South = C.GDK_GRAVITY_SOUTH;
+GdkGravity.SouthEast = C.GDK_GRAVITY_SOUTH_EAST;
+GdkGravity.Static = C.GDK_GRAVITY_STATIC;
+
+GTK.GdkGravity = GdkGravity;
+
+local GdkWindow = {};
 GdkWindow.__index = GdkWindow;
 
 setmetatable(GdkWindow, {
@@ -113,7 +128,23 @@ end
 
 GTK.GdkWindow = GdkWindow;
 
-GtkWidget = {};
+local GdkScreen = {};
+GdkScreen.__index = GdkScreen;
+
+setmetatable(GdkScreen, {
+	__index = GObject,
+	__call = _call_gobject
+});
+
+function GdkScreen:_init(cobj)
+	self._cobj = cobj;
+	return self;
+end
+
+GTK.GdkScreen = GdkScreen;
+
+--Gtk
+local GtkWidget = {};
 GtkWidget.__index = GtkWidget;
 
 setmetatable(GtkWidget, {
@@ -207,7 +238,7 @@ end
 GTK.GtkContainer = GtkContainer;
 GTK.Container = GtkContainer;
 
-GtkBin = {};
+local GtkBin = {};
 GtkBin.__index = GtkBin;
 
 setmetatable(GtkBin, {
@@ -236,7 +267,7 @@ PositionType.Bottom = C.GTK_POS_BOTTOM;
 
 GTK.PositionType = PositionType;
 
-GtkButton = {};
+local GtkButton = {};
 GtkButton.__index = GtkButton;
 
 setmetatable(GtkButton, {
@@ -372,7 +403,16 @@ WindowType.Popup = C.GTK_WINDOW_POPUP;
 
 GTK.WindowType = WindowType;
 
-GtkWindow = {};
+local WindowPosition = {};
+WindowPosition.None = C.GTK_WIN_POS_NONE;
+WindowPosition.Center = C.GTK_WIN_POS_CENTER;
+WindowPosition.Mouse = C.GTK_WIN_POS_MOUSE;
+WindowPosition.CenterAlways = C.GTK_WIN_POS_CENTER_ALWAYS;
+WindowPosition.CenterOnParent = C.GTK_WIN_POS_CENTER_ON_PARENT;
+
+GTK.WindowPosition = WindowPosition;
+
+local GtkWindow = {};
 GtkWindow.__index = GtkWindow;
 
 setmetatable(GtkWindow, {
@@ -381,6 +421,11 @@ setmetatable(GtkWindow, {
 });
 
 function GtkWindow:_init(windowType)
+	if type(windowType) == "cdata" then
+		self._cobj = windowType;
+		return self;
+	end
+	
 	local useWinType;
 	if windowType ~= WindowType.TopLevel and windowType ~= WindowType.Popup then
 		useWinType = 0;
@@ -410,37 +455,291 @@ function GtkWindow:set_resizable(resizable)
 	if self._cobj ~= nil then return; end
 	
 	local boolVal = not not resizable;
-	C.gtk_window_set_resizable(self._cobj, boolVal);
+	C.gtk_window_set_resizable(GTK_WINDOW(self._cobj), boolVal);
 end
 
 function GtkWindow:get_resizable()
 	if self._cobj ~= nil then return false; end
 
-	return C.gtk_window_get_resizable(self._cobj) == C.TRUE;
+	return C.gtk_window_get_resizable(GTK_WINDOW(self._cobj)) == C.TRUE;
 end
 
 function GtkWindow:active_focus()
 	if self._cobj ~= nil then return false; end
 
-	return C.gtk_window_active_focus(self._cobj) == C.TRUE;
+	return C.gtk_window_active_focus(GTK_WINDOW(self._cobj)) == C.TRUE;
 end
 
 function GtkWindow:active_default()
 	if self._cobj ~= nil then return false; end
 
-	return C.gtk_window_active_default(self._cobj) == C.TRUE;
+	return C.gtk_window_active_default(GTK_WINDOW(self._cobj)) == C.TRUE;
 end
 
 function GtkWindow:set_modal(isModal)
-	if self._cobj ~= nil then return false; end
+	if self._cobj ~= nil then return; end
 
-	C.gtk_window_set_modal(self._cobj, not not isModal);
+	C.gtk_window_set_modal(GTK_WINDOW(self._cobj), not not isModal);
 end
 
 function GtkWindow:set_default_size(width, height)
-	if self._cobj ~= nil then return false; end
+	if self._cobj ~= nil then return; end
 
-	return C.gtk_window_set_default_size(self._cobj, width, height);
+	C.gtk_window_set_default_size(GTK_WINDOW(self._cobj), width, height);
+end
+
+function GtkWindow:set_gravity(gravity)
+	if self._cobj ~= nil then return; end
+
+	C.gtk_window_set_gravity(GTK_WINDOW(self._cobj), gravity);
+end
+
+function GtkWindow:get_gravity()
+	if self._cobj ~= nil then return; end
+
+	return C.gtk_window_get_gravity(GTK_WINDOW(self._cobj));
+end
+
+function GtkWindow:set_position(pos)
+	if self._cobj ~= nil then return; end
+
+	C.gtk_window_set_position(GTK_WINDOW(self._cobj), pos);
+end
+
+function GtkWindow:set_transient_for(otherWindow)
+	if self._cobj ~= nil then return; end
+
+	C.gtk_window_set_transient_for(GTK_WINDOW(self._cobj), GTK_WINDOW(otherWindow));
+end
+
+function GtkWindow:set_attached_to(widget)
+	if self._cobj ~= nil then return; end
+
+	C.gtk_window_set_attached_to(GTK_WINDOW(self._cobj), widget);
+end
+
+function GtkWindow:set_destroy_with_parent(doDestroy)
+	if self._cobj ~= nil then return; end
+
+	local boolVal = not not doDestroy;
+	C.gtk_window_set_destroy_with_parent(GTK_WINDOW(self._cobj), boolVal);
+end
+
+function GtkWindow:set_hide_titlebar_when_maximized(doHide)
+	if self._cobj ~= nil then return; end
+
+	local boolVal = not not doHide;
+	C.gtk_window_set_hide_titlebar_when_maximized(GTK_WINDOW(self._cobj), boolVal);
+end
+
+function GtkWindow:set_screen(screen)
+	if self._cobj ~= nil then return; end
+	if not screen or screen._cobj == nil then return; end
+
+	C.gtk_window_set_screen(GTK_WINDOW(self._cobj), screen._cobj);
+end
+
+function GtkWindow:get_screen()
+	if self._cobj ~= nil then return; end
+
+	local tmpScreen = C.gtk_window_get_screen(GTK_WINDOW(self._cobj));
+	if tmpScreen == nil then
+		return nil;
+	else
+		return GdkScreen(tmpScreen);
+	end
+end
+
+function GtkWindow:is_active()
+	if self._cobj ~= nil then return; end
+
+	return C.gtk_window_is_active(GTK_WINDOW(self._cobj)) == C.TRUE;
+end
+
+function GtkWindow:is_maximized()
+	if self._cobj ~= nil then return; end
+
+	return C.gtk_window_is_maximized(GTK_WINDOW(self._cobj)) == C.TRUE;
+end
+
+function GtkWindow:has_toplevel_focus()
+	if self._cobj ~= nil then return; end
+
+	return C.gtk_window_has_toplevel_focus(GTK_WINDOW(self._cobj)) == C.TRUE;
+end
+
+function GtkWindow:close()
+	if self._cobj ~= nil then return; end
+
+	C.gtk_window_close(GTK_WINDOW(self._cobj));
+end
+
+function GtkWindow:iconify()
+	if self._cobj ~= nil then return; end
+
+	C.gtk_window_iconify(GTK_WINDOW(self._cobj));
+end
+
+function GtkWindow:deiconify()
+	if self._cobj ~= nil then return; end
+
+	C.gtk_window_deiconify(GTK_WINDOW(self._cobj));
+end
+
+function GtkWindow:stick()
+	if self._cobj ~= nil then return; end
+
+	C.gtk_window_stick(GTK_WINDOW(self._cobj));
+end
+
+function GtkWindow:unstick()
+	if self._cobj ~= nil then return; end
+
+	C.gtk_window_unstick(GTK_WINDOW(self._cobj));
+end
+
+function GtkWindow:maximize()
+	if self._cobj ~= nil then return; end
+
+	C.gtk_window_maximize(GTK_WINDOW(self._cobj));
+end
+
+function GtkWindow:unmaximize()
+	if self._cobj ~= nil then return; end
+
+	C.gtk_window_unmaximize(GTK_WINDOW(self._cobj));
+end
+
+function GtkWindow:fullscreen()
+	if self._cobj ~= nil then return; end
+
+	C.gtk_window_fullscreen(GTK_WINDOW(self._cobj));
+end
+
+function GtkWindow:unfullscreen()
+	if self._cobj ~= nil then return; end
+
+	C.gtk_window_unfullscreen(GTK_WINDOW(self._cobj));
+end
+
+function GtkWindow:set_keep_above(setting)
+	if self._cobj ~= nil then return; end
+
+	C.gtk_window_set_keep_above(GTK_WINDOW(self._cobj), not not setting);
+end
+
+function GtkWindow:set_keep_below(setting)
+	if self._cobj ~= nil then return; end
+
+	C.gtk_window_set_keep_below(GTK_WINDOW(self._cobj), not not setting);
+end
+
+function GtkWindow:set_decorated(setting)
+	if self._cobj ~= nil then return; end
+
+	C.gtk_window_set_decorated(GTK_WINDOW(self._cobj), not not setting);
+end
+
+function GtkWindow:set_deletable(setting)
+	if self._cobj ~= nil then return; end
+
+	C.gtk_window_set_deletable(GTK_WINDOW(self._cobj), not not setting);
+end
+
+function GtkWindow:set_skip_taskbar_hint(setting)
+	if self._cobj ~= nil then return; end
+
+	C.gtk_window_set_skip_taskbar_hint(GTK_WINDOW(self._cobj), not not setting);
+end
+
+function GtkWindow:set_urgency_hint(setting)
+	if self._cobj ~= nil then return; end
+
+	C.gtk_window_set_urgency_hint(GTK_WINDOW(self._cobj), not not setting);
+end
+
+function GtkWindow:set_accept_focus(setting)
+	if self._cobj ~= nil then return; end
+
+	C.gtk_window_set_accept_focus(GTK_WINDOW(self._cobj), not not setting);
+end
+
+function GtkWindow:set_focus_on_map(setting)
+	if self._cobj ~= nil then return; end
+
+	C.gtk_window_set_focus_on_map(GTK_WINDOW(self._cobj), not not setting);
+end
+
+function GtkWindow:get_decorated()
+	if self._cobj ~= nil then return; end
+
+	return not not C.gtk_window_get_decorated(GTK_WINDOW(self._cobj));
+end
+
+function GtkWindow:get_deletable()
+	if self._cobj ~= nil then return; end
+
+	return not not C.gtk_window_get_deletable(GTK_WINDOW(self._cobj));
+end
+
+function GtkWindow:get_default_icon_name()
+	if self._cobj ~= nil then return; end
+
+	return C.gtk_window_get_default_icon_name(GTK_WINDOW(self._cobj));
+end
+
+function GtkWindow:get_destroy_with_parent()
+	if self._cobj ~= nil then return; end
+
+	return C.gtk_window_get_destroy_with_parent(GTK_WINDOW(self._cobj));
+end
+
+function GtkWindow:get_default_icon_name()
+	if self._cobj ~= nil then return; end
+
+	return C.gtk_window_get_default_icon_name(GTK_WINDOW(self._cobj));
+end
+
+function GtkWindow:get_hide_titlebar_when_maximized()
+	if self._cobj ~= nil then return; end
+
+	return C.gtk_window_get_hide_titlebar_when_maximized(GTK_WINDOW(self._cobj));
+end
+
+function GtkWindow:get_icon_name()
+	if self._cobj ~= nil then return; end
+
+	return C.gtk_window_get_icon_name(GTK_WINDOW(self._cobj));
+end
+
+function GtkWindow:set_icon_name(name)
+	if self._cobj ~= nil then return; end
+
+	C.gtk_window_set_icon_name(GTK_WINDOW(self._cobj), name);
+end
+
+function GtkWindow:get_modal()
+	if self._cobj ~= nil then return; end
+
+	return C.gtk_window_get_modal(GTK_WINDOW(self._cobj));
+end
+
+function GtkWindow:get_title()
+	if self._cobj ~= nil then return; end
+
+	return C.gtk_window_get_title(GTK_WINDOW(self._cobj));
+end
+
+function GtkWindow:get_transient_for()
+	if self._cobj ~= nil then return; end
+
+	local tmpTransient = C.gtk_window_get_transient_for(GTK_WINDOW(self._cobj));
+
+	if tmpTransient == nil then
+		return nil;
+	else
+		return tmpTransient;
+	end
 end
 
 GTK.GtkWindow = GtkWindow;
