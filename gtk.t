@@ -98,6 +98,14 @@ end
 
 GTK.GObject = GObject;
 
+local GApplication = {};
+GApplication.__index = GApplication;
+
+setmetatable(GApplication, {
+	__index = GObject,
+	__call = _call_gobject
+});
+
 --Gdk
 local GdkGravity = {};
 GdkGravity.NorthWest = C.GDK_GRAVITY_NORTH_WEST;
