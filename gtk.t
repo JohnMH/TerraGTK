@@ -36,6 +36,19 @@ local C = terralib.includecstring([[
 
 GTK.C = C;
 
+--"Macros"
+function G_OBJECT(obj)
+	return terralib.cast(&C.GObject, obj);
+end
+
+function G_APPLICATION(obj)
+	return terralib.cast(&C.GApplication, obj);
+end
+
+function GTK_WINDOW(obj)
+	return terralib.cast(&C.GtkWindow, obj);
+end
+
 --Useful when running from the Terra REPL or running a script
 function GTK.loadlib()
 	terralib.linklibrary(plat.lib_path);
@@ -106,7 +119,7 @@ ApplicationFlags.HandlesOpen = C.G_APPLICATION_HANDLES_OPEN;
 ApplicationFlags.HandlesCommandLine = C.G_APPLICATION_HANDLES_COMMAND_LINE;
 ApplicationFlags.SendEnvironment = C.G_APPLICATION_SEND_ENVIRONMENT;
 ApplicationFlags.NonUnique = C.G_APPLICATION_NON_UNIQUE;
-ApplicationFlags.CanOverrideAppId = C.G_APPLICATON_CAN_OVERRIDE_APP_ID;
+ApplicationFlags.CanOverrideAppId = C.G_APPLICATION_CAN_OVERRIDE_APP_ID;
 
 GTK.ApplicationFlags = ApplicationFlags;
 
@@ -117,6 +130,56 @@ setmetatable(GApplication, {
 	__index = GObject,
 	__call = _call_gobject
 });
+
+function GApplication:get_application_id()
+	if self._cobj == nil then return; end
+
+	return C.g_application_get_application_id(self._cobj);
+end
+
+function GApplication:set_application_id(app_id)
+	if self._cobj == nil then return; end
+
+	C.g_application_set_application_id(self._cobj, app_id);
+end
+
+function GApplication:get_is_registered()
+	if self._cobj == nil then return; end
+
+	return not not C.g_application_get_is_registered(self._cobj);
+end
+
+function GApplication:get_is_remote()
+	if self._cobj == nil then return; end
+
+	return not not C.g_application_get_is_remote(self._cobj);
+end
+
+function GApplication:quit()
+	if self._cobj == nil then return; end
+
+	C.g_application_quit(self._cobj);
+end
+
+function GApplication:activate()
+	if self._cobj == nil then return; end
+
+	C.g_application_activate(self._cobj);
+end
+
+terra _g_application_run(app : &C.GApplication, argc : int, argv : &rawstring)
+	C.g_application_run(app, argc, argv);
+end
+
+function GApplication:run(argc, argv)
+	if self._cobj == nil then return; end
+
+	if type(argc) == "nil" then
+		_g_application_run(G_APPLICATION(self._cobj), 0, nil);
+	else
+		_g_application_run(G_APPLICATION(self._cobj), argc, argv);
+	end
+end
 
 GTK.GApplication = GApplication;
 
@@ -164,10 +227,6 @@ end
 GTK.GdkScreen = GdkScreen;
 
 --Gtk
-terra GTK_WINDOW(win : &C.GtkWidget)
-	return [&C.GtkWindow](win);
-end
-
 local GtkApplication = {};
 GtkApplication.__index = GtkApplication;
 
