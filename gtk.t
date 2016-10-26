@@ -106,6 +106,8 @@ setmetatable(GApplication, {
 	__call = _call_gobject
 });
 
+GTK.GApplication = GApplication;
+
 --Gdk
 local GdkGravity = {};
 GdkGravity.NorthWest = C.GDK_GRAVITY_NORTH_WEST;
@@ -131,7 +133,6 @@ setmetatable(GdkWindow, {
 
 function GdkWindow:_init(cobj)
 	self._cobj = cobj;
-	return self;
 end
 
 GTK.GdkWindow = GdkWindow;
@@ -146,12 +147,25 @@ setmetatable(GdkScreen, {
 
 function GdkScreen:_init(cobj)
 	self._cobj = cobj;
-	return self;
 end
 
 GTK.GdkScreen = GdkScreen;
 
 --Gtk
+local GtkApplication = {};
+GtkApplication.__index = GtkApplication;
+
+setmetatable(GtkApplication, {
+	__index = GApplication,
+	__call = _call_gobject
+});
+
+function GtkApplication:_init()
+	
+end
+
+GTK.GtkApplication = GtkApplication;
+
 local GtkWidget = {};
 GtkWidget.__index = GtkWidget;
 
@@ -162,7 +176,6 @@ setmetatable(GtkWidget, {
 
 function GtkWidget:_init(cobj)
 	self._cobj = cobj;
-	return self;
 end
 
 function GtkWidget:destroy()
@@ -285,8 +298,6 @@ setmetatable(GtkButton, {
 
 function GtkButton:_init(cobj)
 	self._cobj = cobj;
-
-	return self;
 end
 
 function GtkButton.new()
@@ -431,7 +442,7 @@ setmetatable(GtkWindow, {
 function GtkWindow:_init(windowType)
 	if type(windowType) == "cdata" then
 		self._cobj = windowType;
-		return self;
+		return;
 	end
 	
 	local useWinType;
@@ -442,7 +453,7 @@ function GtkWindow:_init(windowType)
 	end
 
 	self._cobj = C.gtk_window_new(useWinType);
-	return self;
+	return;
 end
 
 terra GTK_WINDOW(win : &C.GtkWidget)
