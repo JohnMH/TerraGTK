@@ -22,6 +22,7 @@ GTK.init();
 local win = GTK.Window(GTK.WindowType.TopLevel);
 win:set_title("Hi, I'm a title! How cool is that?");
 win:set_default_size(500, 70);
+win:set_position(GTK.WindowPosition.Center);
 local btn = GTK.Button.new_with_label("Click me");
 win:add(btn);
 win:show_all();
