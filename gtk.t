@@ -98,6 +98,18 @@ end
 
 GTK.GObject = GObject;
 
+local ApplicationFlags = {};
+ApplicationFlags.None = C.G_APPLICATION_FLAGS_NONE;
+ApplicationFlags.Service = C.G_APPLICATION_IS_SERVICE;
+ApplicationFlags.Launcher = C.G_APPLICATION_IS_LAUNCHER;
+ApplicationFlags.HandlesOpen = C.G_APPLICATION_HANDLES_OPEN;
+ApplicationFlags.HandlesCommandLine = C.G_APPLICATION_HANDLES_COMMAND_LINE;
+ApplicationFlags.SendEnvironment = C.G_APPLICATION_SEND_ENVIRONMENT;
+ApplicationFlags.NonUnique = C.G_APPLICATION_NON_UNIQUE;
+ApplicationFlags.CanOverrideAppId = C.G_APPLICATON_CAN_OVERRIDE_APP_ID;
+
+GTK.ApplicationFlags = ApplicationFlags;
+
 local GApplication = {};
 GApplication.__index = GApplication;
 
@@ -152,6 +164,10 @@ end
 GTK.GdkScreen = GdkScreen;
 
 --Gtk
+terra GTK_WINDOW(win : &C.GtkWidget)
+	return [&C.GtkWindow](win);
+end
+
 local GtkApplication = {};
 GtkApplication.__index = GtkApplication;
 
@@ -160,8 +176,50 @@ setmetatable(GtkApplication, {
 	__call = _call_gobject
 });
 
-function GtkApplication:_init()
-	
+function GtkApplication:_init(app_id, flags)
+	self._cobj = C.gtk_application_new(app_id, flags or 0);
+end
+
+function GtkApplication:add_window(win)
+	if self._cobj == nil then return; end
+
+	C.gtk_application_add_window(self._cobj, GTK_WINDOW(win));
+end
+
+function GtkApplication:remove_window(win)
+	if self._cobj == nil then return; end
+
+	C.gtk_application_remove_window(self._cobj, GTK_WINDOW(win));
+end
+
+function GtkApplication:get_window_by_id(id)
+	if self._cobj == nil then return; end
+
+	local tmpWin = C.gtk_application_get_window_by_id(self._cobj, id);
+
+	if tmpWin == nil then
+		return nil;
+	else
+		return GtkWindow(tmpWin);
+	end
+end
+
+function GtkApplication:get_active_window()
+	if self._cobj == nil then return; end
+
+	local tmpWin = C.gtk_application_get_active_window(self._cobj);
+
+	if tmpWin == nil then
+		return nil;
+	else
+		return GtkWindow(tmpWin);
+	end
+end
+
+function GtkApplication:prefers_app_menu()
+	if self._cobj == nil then return; end
+
+	return not not C.gtk_application_prefers_app_menu(self._cobj);
 end
 
 GTK.GtkApplication = GtkApplication;
@@ -454,10 +512,6 @@ function GtkWindow:_init(windowType)
 
 	self._cobj = C.gtk_window_new(useWinType);
 	return;
-end
-
-terra GTK_WINDOW(win : &C.GtkWidget)
-	return [&C.GtkWindow](win);
 end
 
 function GtkWindow:set_title(title)
