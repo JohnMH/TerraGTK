@@ -26,6 +26,12 @@ function activate()
 	win:set_title("My title");
 	win:set_default_size(200, 200);
 
+	btn_box = GTK.ButtonBox(GTK.Orientation.Horizontal);
+	win:add(btn_box);
+
+	btn = GTK.Button.new_with_label("Hello World");
+	btn_box:add(btn);
+
 	win:show_all();
 end
 

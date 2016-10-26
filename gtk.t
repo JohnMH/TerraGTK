@@ -53,12 +53,12 @@ function GTK_WINDOW(obj)
 	return terralib.cast(&C.GtkWindow, obj);
 end
 
-function GTK_BUTTON(obj)
-	return terralib.cast(&C.GtkButton, obj);
-end
-
 function GTK_CONTAINER(obj)
 	return terralib.cast(&C.GtkContainer, obj);
+end
+
+function GTK_BUTTON(obj)
+	return terralib.cast(&C.GtkButton, obj);
 end
 
 function GTK_BUTTONBOX(obj)
@@ -455,6 +455,32 @@ end
 
 GTK.GtkContainer = GtkContainer;
 GTK.Container = GtkContainer;
+
+Orientation = {};
+Orientation.Horizontal = C.GTK_ORIENTATION_HORIZONTAL;
+Orientation.Veritical = C.GTK_ORIENTATION_VERTICAL;
+
+GTK.Orientation = Orientation;
+
+GtkButtonBox = {};
+GtkButtonBox.__index = GtkButtonBox;
+
+setmetatable(GtkButtonBox, {
+	__index = GtkContainer,
+	__call = _call_gobject
+});
+
+function GtkButtonBox:_init(orientation)
+	if type(orientation) == "cdata" then
+		self._cobj = orientation;
+		return;
+	end
+
+	self._cobj = C.gtk_button_box_new(orientation);
+end
+
+GTK.GtkButtonBox = GtkButtonBox;
+GTK.ButtonBox = GtkButtonBox;
 
 local GtkBin = {};
 GtkBin.__index = GtkBin;
