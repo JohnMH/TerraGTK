@@ -17,7 +17,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 local GTK = require("../gtk");
 GTK.loadlib();
 
-local app = GTK.GtkApplication("org.gtk.example", GTK.ApplicationFlags.NONE);
+local app;
+
+function activate()
+	local win, btn, btn_box;
+
+	win = app:window_new();
+	win:set_title("My title");
+	win:set_default_size(200, 200);
+
+	win:show_all();
+end
+
+app = GTK.GtkApplication("org.gtk.example", GTK.ApplicationFlags.NONE);
+app:connect("activate", activate);
 app:run();
 app:unref();
 

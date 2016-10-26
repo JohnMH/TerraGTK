@@ -45,8 +45,24 @@ function G_APPLICATION(obj)
 	return terralib.cast(&C.GApplication, obj);
 end
 
+function GTK_APPLICATION(obj)
+	return terralib.cast(&C.GtkApplication, obj);
+end
+
 function GTK_WINDOW(obj)
 	return terralib.cast(&C.GtkWindow, obj);
+end
+
+function GTK_BUTTON(obj)
+	return terralib.cast(&C.GtkButton, obj);
+end
+
+function GTK_CONTAINER(obj)
+	return terralib.cast(&C.GtkContainer, obj);
+end
+
+function GTK_BUTTONBOX(obj)
+	return terralib.cast(&C.GtkButtonBox, obj);
 end
 
 --Useful when running from the Terra REPL or running a script
@@ -131,40 +147,56 @@ setmetatable(GApplication, {
 	__call = _call_gobject
 });
 
+function GApplication:_init(un)
+	if type(un) == "cdata" then
+		self._cobj = un;
+		return;
+	end
+end
+
+function GApplication.get_default()
+	local tmpApp = C.g_application_get_default();
+	if tmpApp == nil then
+		return nil;
+	else
+		return GApplication(tmpApp);
+	end
+end
+
 function GApplication:get_application_id()
 	if self._cobj == nil then return; end
 
-	return C.g_application_get_application_id(self._cobj);
+	return C.g_application_get_application_id(G_APPLICATION(self._cobj));
 end
 
 function GApplication:set_application_id(app_id)
 	if self._cobj == nil then return; end
 
-	C.g_application_set_application_id(self._cobj, app_id);
+	C.g_application_set_application_id(G_APPLICATION(self._cobj), app_id);
 end
 
 function GApplication:get_is_registered()
 	if self._cobj == nil then return; end
 
-	return not not C.g_application_get_is_registered(self._cobj);
+	return not not C.g_application_get_is_registered(G_APPLICATION(self._cobj));
 end
 
 function GApplication:get_is_remote()
 	if self._cobj == nil then return; end
 
-	return not not C.g_application_get_is_remote(self._cobj);
+	return not not C.g_application_get_is_remote(G_APPLICATION(self._cobj));
 end
 
 function GApplication:quit()
 	if self._cobj == nil then return; end
 
-	C.g_application_quit(self._cobj);
+	C.g_application_quit(G_APPLICATION(self._cobj));
 end
 
 function GApplication:activate()
 	if self._cobj == nil then return; end
 
-	C.g_application_activate(self._cobj);
+	C.g_application_activate(G_APPLICATION(self._cobj));
 end
 
 terra _g_application_run(app : &C.GApplication, argc : int, argv : &rawstring)
@@ -179,6 +211,30 @@ function GApplication:run(argc, argv)
 	else
 		_g_application_run(G_APPLICATION(self._cobj), argc, argv);
 	end
+end
+
+function GApplication:set_default()
+	if self._cobj == nil then return; end
+
+	C.g_application_set_default(G_APPLICATION(self._cobj));
+end
+
+function GApplication:mark_busy()
+	if self._cobj == nil then return; end
+
+	C.g_application_mark_busy(G_APPLICATION(self._cobj));
+end
+
+function GApplication:unmark_busy()
+	if self._cobj == nil then return; end
+
+	C.g_application_unmark_busy(G_APPLICATION(self._cobj));
+end
+
+function GApplication:get_is_busy()
+	if self._cobj == nil then return; end
+
+	return not not C.g_application_get_is_busy(G_APPLICATION(self._cobj));
 end
 
 GTK.GApplication = GApplication;
@@ -227,6 +283,8 @@ end
 GTK.GdkScreen = GdkScreen;
 
 --Gtk
+local GtkWindow;
+
 local GtkApplication = {};
 GtkApplication.__index = GtkApplication;
 
@@ -236,25 +294,39 @@ setmetatable(GtkApplication, {
 });
 
 function GtkApplication:_init(app_id, flags)
+	if type(app_id) == "cdata" then
+		self._cobj = app_id;
+		return;
+	end
+	
 	self._cobj = C.gtk_application_new(app_id, flags or 0);
+end
+
+function GtkApplication.get_default()
+	local tmpApp = C.g_application_get_default();
+	if tmpApp == nil then
+		return nil;
+	else
+		return GtkApplication(tmpApp);
+	end
 end
 
 function GtkApplication:add_window(win)
 	if self._cobj == nil then return; end
 
-	C.gtk_application_add_window(self._cobj, GTK_WINDOW(win));
+	C.gtk_application_add_window(GTK_APPLICATION(self._cobj), GTK_WINDOW(win));
 end
 
 function GtkApplication:remove_window(win)
 	if self._cobj == nil then return; end
 
-	C.gtk_application_remove_window(self._cobj, GTK_WINDOW(win));
+	C.gtk_application_remove_window(GTK_APPLICATION(self._cobj), GTK_WINDOW(win));
 end
 
 function GtkApplication:get_window_by_id(id)
 	if self._cobj == nil then return; end
 
-	local tmpWin = C.gtk_application_get_window_by_id(self._cobj, id);
+	local tmpWin = C.gtk_application_get_window_by_id(GTK_APPLICATION(self._cobj), id);
 
 	if tmpWin == nil then
 		return nil;
@@ -266,7 +338,7 @@ end
 function GtkApplication:get_active_window()
 	if self._cobj == nil then return; end
 
-	local tmpWin = C.gtk_application_get_active_window(self._cobj);
+	local tmpWin = C.gtk_application_get_active_window(GTK_APPLICATION(self._cobj));
 
 	if tmpWin == nil then
 		return nil;
@@ -278,7 +350,19 @@ end
 function GtkApplication:prefers_app_menu()
 	if self._cobj == nil then return; end
 
-	return not not C.gtk_application_prefers_app_menu(self._cobj);
+	return not not C.gtk_application_prefers_app_menu(GTK_APPLICATION(self._cobj));
+end
+
+function GtkApplication:window_new()
+	if self._cobj == nil then return; end
+
+	local tmpWin = C.gtk_application_window_new(GTK_APPLICATION(self._cobj));
+
+	if tmpWin == nil then
+		return nil;
+	else
+		return GtkWindow(tmpWin);
+	end
 end
 
 GTK.GtkApplication = GtkApplication;
@@ -363,10 +447,6 @@ setmetatable(GtkContainer, {
 function GtkContainer:_init()
 	error("Do not create a GtkContainer directly.");
 end
-
-terra GTK_CONTAINER(cont : &C.GtkWidget) : &C.GtkContainer
-	return [&C.GtkContainer](cont);
-end
 		
 function GtkContainer:add(widget)
 	if self._cobj == nil then return; end
@@ -435,10 +515,6 @@ end
 function GtkButton.new_from_icon_name(icon_name, size)
 	local cobj = C.gtk_button_new_from_icon_name(icon_name, size);
 	return GtkButton(cobj);
-end
-
-terra GTK_BUTTON(win : &C.GtkWidget)
-	return [&C.GtkButton](win);
 end
 
 function GtkButton:set_relief(relief)
@@ -548,7 +624,7 @@ WindowPosition.CenterOnParent = C.GTK_WIN_POS_CENTER_ON_PARENT;
 
 GTK.WindowPosition = WindowPosition;
 
-local GtkWindow = {};
+GtkWindow = {};
 GtkWindow.__index = GtkWindow;
 
 setmetatable(GtkWindow, {
