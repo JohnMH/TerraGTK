@@ -81,8 +81,8 @@ function GTK_MENU_ITEM(obj)
 	return terralib.cast(&C.GtkMenuItem, obj);
 end
 
-function G_MENU(obj)
-	return terralib.cast(&C.GMenu, obj);
+function GTK_MENU(obj)
+	return terralib.cast(&C.GtkMenu, obj);
 end
 
 function GTK_MENU_SHELL(obj)
@@ -203,124 +203,6 @@ function GMenuModel:get_item_link(idx, link)
 end
 
 GTK.MenuModel = GMenuModel;
-
-local GMenu = {};
-GMenu.__index = GMenu;
-
-setmetatable(GMenu, {
-	__index = GMenuModel,
-	__call = _call_gobject
-});
-
-function GMenu:_init(un)
-	if type(un) == "cdata" then
-		self._cobj = un;
-		return;
-	end
-
-	self._cobj = C.g_menu_new();
-end
-
-function GMenu:freeze()
-	if self._cobj == nil then return; end
-
-	C.g_menu_freeze(G_MENU(self._cobj));
-end
-
-function GMenu:insert(pos, label, detailed_action)
-	if self._cobj == nil then return; end
-
-	C.g_menu_insert(G_MENU(self._cobj), pos, label, detailed_action);
-end
-
-function GMenu:prepend(label, detailed_action)
-	if self._cobj == nil then return; end
-
-	C.g_menu_prepend(G_MENU(self._cobj), label, detailed_action);
-end
-
-function GMenu:append(label, detailed_action)
-	if self._cobj == nil then return; end
-
-	C.g_menu_append(G_MENU(self._cobj), label, detailed_action);
-end
-
-function GMenu:insert_item(pos, item)
-	if self._cobj == nil then return; end
-	if not item or item._cobj == nil then return; end
-	
-	C.g_menu_insert_item(G_MENU(self._cobj), pos, G_MENU_ITEM(item._cobj));
-end
-
-function GMenu:append_item(pos, item)
-	if self._cobj == nil then return; end
-	if not item or item._cobj == nil then return; end
-	
-	C.g_menu_append_item(G_MENU(self._cobj), G_MENU_ITEM(item._cobj));
-end
-
-function GMenu:prepend_item(pos, item)
-	if self._cobj == nil then return; end
-	if not item or item._cobj == nil then return; end
-	
-	C.g_menu_prepend_item(G_MENU(self._cobj), G_MENU_ITEM(item._cobj));
-end
-
-function GMenu:insert_section(pos, label, section)
-	if self._cobj == nil then return; end
-	if not section or section._cobj == nil then return; end
-	
-	C.g_menu_insert_section(G_MENU(self._cobj), pos, label, G_MENU_MODEL(section._cobj));
-end
-
-function GMenu:prepend_section(label, section)
-	if self._cobj == nil then return; end
-	if not section or section._cobj == nil then return; end
-	
-	C.g_menu_prepend_section(G_MENU(self._cobj), label, G_MENU_MODEL(section._cobj));
-end
-
-function GMenu:append_section(label, section)
-	if self._cobj == nil then return; end
-	if not section or section._cobj == nil then return; end
-	
-	C.g_menu_append_section(G_MENU(self._cobj), label, G_MENU_MODEL(section._cobj));
-end
-
-function GMenu:insert_submenu(pos, label, submenu)
-	if self._cobj == nil then return; end
-	if not submenu or submenu._cobj == nil then return; end
-	
-	C.g_menu_insert_submenu(G_MENU(self._cobj), pos, label, G_MENU_MODEL(submenu._cobj));
-end
-
-function GMenu:prepend_submenu(label, submenu)
-	if self._cobj == nil then return; end
-	if not submenu or submenu._cobj == nil then return; end
-	
-	C.g_menu_prepend_submenu(G_MENU(self._cobj), label, G_MENU_MODEL(submenu._cobj));
-end
-
-function GMenu:append_submenu(label, submenu)
-	if self._cobj == nil then return; end
-	if not submenu or  submenu._cobj == nil then return; end
-	
-	C.g_menu_append_submenu(G_MENU(self._cobj), label, G_MENU_MODEL(submenu._cobj));
-end
-
-function GMenu:remove(pos)
-	if self._cobj == nil then return; end
-	
-	C.g_menu_remove(G_MENU(self._cobj), pos);
-end
-
-function GMenu:remove_all()
-	if self._cobj == nil then return; end
-	
-	C.g_menu_remove_all(G_MENU(self._cobj));
-end
-
-GTK.Menu = GMenu;
 
 local GApplication = {};
 GApplication.__index = GApplication;
@@ -866,6 +748,26 @@ end
 GTK.GtkMenuShell = GtkMenuShell;
 GTK.MenuShell = GtkMenuShell;
 
+local GtkMenu = {};
+GtkMenu.__index = GtkMenu;
+
+setmetatable(GtkMenu, {
+	__index = GtkMenuShell,
+	__call = _call_gobject
+});
+
+function GtkMenu:_init(un)
+	if type(un) == "cdata" then
+		self._cobj = un;
+		return;
+	end
+
+	self._cobj = C.gtk_menu_new();
+end
+
+GTK.Menu = GtkMenu;
+GTK.GtkMenu = GtkMenu;
+
 GtkMenuBar = {};
 GtkMenuBar.__index = GtkMenuBar;
 
@@ -991,33 +893,43 @@ end
 function GtkMenuItem:set_label(label)
 	if self._cobj == nil then return; end
 
-	C.gtk_menu_item_set_label(G_MENU_MODEL(self._cobj), label);
+	C.gtk_menu_item_set_label(G_MENU_ITEM(self._cobj), label);
 end
 
 function GtkMenuItem:get_label()
 	if self._cobj == nil then return; end
 
-	return C.gtk_menu_item_get_label(G_MENU_MODEL(self._cobj));
+	return C.gtk_menu_item_get_label(G_MENU_ITEM(self._cobj));
 end
 
-function GtkMenuItem:set_detailed_action(detailed_action)
+function GtkMenuItem:set_use_underline(setting)
 	if self._cobj == nil then return; end
 
-	C.gtk_menu_item_set_detailed_action(G_MENU_MODEL(self._cobj), detailed_action);
+	C.gtk_menu_item_set_use_underline(G_MENU_ITEM(self._cobj), setting);
 end
 
-function GtkMenuItem:set_section(label, section)
+function GtkMenuItem:get_use_underline()
 	if self._cobj == nil then return; end
-	if not section or section._cobj == nil then return; end
 
-	C.gtk_menu_item_set_section(label, GTK_MENU_MODEL(section));
+	return not not C.gtk_menu_item_get_use_underline(G_MENU_ITEM(self._cobj));
 end
 
-function GtkMenuItem:set_submenu(label, submenu)
+function GtkMenuItem:set_submenu(submenu)
 	if self._cobj == nil then return; end
 	if not submenu or submenu._cobj == nil then return; end
 
-	C.gtk_menu_item_set_submenu(label, GTK_MENU_MODEL(submenu));
+	C.gtk_menu_item_set_submenu(GTK_MENU_ITEM(self._cobj), GTK_WIDGET(submenu._cobj));
+end
+
+function GtkMenuItem:get_submenu()
+	if self._cobj == nil then return; end
+
+	local tmpWidget = C.gtk_menu_item_get_submenu(GTK_MENU_ITEM(self._cobj));
+	if tmpWidget == nil then
+		return nil;
+	else
+		return GtkWidget(tmpWidget);
+	end
 end
 
 GTK.MenuItem = GtkMenuItem;
