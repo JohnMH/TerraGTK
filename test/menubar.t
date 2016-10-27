@@ -27,12 +27,13 @@ function activate()
 	win:set_default_size(200, 200);
 
 	menubar = GTK.MenuBar();
-	filemenu = GTK.Menu();
 	file_item = GTK.MenuItem.new_with_label("File");
 	quit_item = GTK.MenuItem.new_with_label("Quit");
-
-	file_item:set_submenu(filemenu);
+	
+	filemenu = GTK.Menu();
 	filemenu:append(quit_item);
+	
+	file_item:set_submenu(filemenu);
 	menubar:append(file_item);
 
 	box = GTK.Box(GTK.Orientation.Veritical, 5);
