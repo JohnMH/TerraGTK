@@ -541,7 +541,7 @@ end
 function GtkWidget:show_all()
 	if self._cobj == nil then return; end
 
-	C.gtk_widget_show_all(GTK_WIDGET(self._cobj);
+	C.gtk_widget_show_all(GTK_WIDGET(self._cobj));
 end
 
 function GtkWidget:map()
