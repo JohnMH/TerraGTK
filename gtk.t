@@ -816,7 +816,7 @@ end
 
 Orientation = {};
 Orientation.Horizontal = C.GTK_ORIENTATION_HORIZONTAL;
-Orientation.Veritical = C.GTK_ORIENTATION_VERTICAL;
+Orientation.Vertical = C.GTK_ORIENTATION_VERTICAL;
 
 GTK.Orientation = Orientation;
 
