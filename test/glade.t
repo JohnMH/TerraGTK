@@ -22,13 +22,12 @@ GTK.init();
 local builder = GTK.Builder();
 builder:add_from_file("window.glade");
 
---[[
-local win = GTK.Window(GTK.WindowType.TopLevel);
+local winWidget = builder:get_object("MainWindow");
+if winWidget == nil then
+	os.exit(-1);
+end
+local win = GTK.Window(winWidget._cobj);
 win:set_title("Hi, I'm a title! How cool is that?");
-win:set_default_size(500, 70);
-win:set_position(GTK.WindowPosition.Center);
-local btn = GTK.Button.new_with_label("Click me");
-win:add(btn);
 win:show_all();
 
 terra window_delete() : GTK.C.gboolean
@@ -37,6 +36,5 @@ terra window_delete() : GTK.C.gboolean
 end
 
 win:connect("delete-event", window_delete:getpointer());
-]]
 
 GTK.main();
