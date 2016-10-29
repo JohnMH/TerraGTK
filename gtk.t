@@ -505,55 +505,55 @@ end
 function GtkWidget:destroy()
 	if self._cobj == nil then return; end
 
-	C.gtk_widget_destroy(self._cobj);
+	C.gtk_widget_destroy(GTK_WIDGET(self._cobj));
 end
 
 function GtkWidget:in_destruction()
 	if self._cobj == nil then return; end
 
-	return C.gtk_widget_in_destruction(self._cobj) == C.TRUE;
+	return C.gtk_widget_in_destruction(GTK_WIDGET(self._cobj)) == C.TRUE;
 end
 
 function GtkWidget:unparent()
 	if self._cobj == nil then return; end
 
-	C.gtk_widget_unparent(self._cobj);
+	C.gtk_widget_unparent(GTK_WIDGET(self._cobj));
 end
 
 function GtkWidget:show()
 	if self._cobj == nil then return; end
 
-	C.gtk_widget_show(self._cobj);
+	C.gtk_widget_show(GTK_WIDGET(self._cobj));
 end
 
 function GtkWidget:show_now()
 	if self._cobj == nil then return; end
 
-	C.gtk_widget_show_now(self._cobj);
+	C.gtk_widget_show_now(GTK_WIDGET(self._cobj));
 end
 
 function GtkWidget:hide()
 	if self._cobj == nil then return; end
 
-	C.gtk_widget_hide(self._cobj);
+	C.gtk_widget_hide(GTK_WIDGET(self._cobj));
 end
 
 function GtkWidget:show_all()
 	if self._cobj == nil then return; end
 
-	C.gtk_widget_show_all(self._cobj);
+	C.gtk_widget_show_all(GTK_WIDGET(self._cobj);
 end
 
 function GtkWidget:map()
 	if self._cobj == nil then return; end
 
-	C.gtk_widget_map(self._cobj);
+	C.gtk_widget_map(GTK_WIDGET(self._cobj));
 end
 
 function GtkWidget:unmap()
 	if self._cobj == nil then return; end
 
-	C.gtk_widget_unmap(self._cobj);
+	C.gtk_widget_unmap(GTK_WIDGET(self._cobj));
 end
 
 GTK.GtkWidget = GtkWidget;
