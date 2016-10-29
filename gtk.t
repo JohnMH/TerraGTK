@@ -20,7 +20,7 @@ local plat;
 
 if ffi.os == "Linux" then
 	plat = require("./platform/linux");
-else if ffi.os == "OSX" then
+elseif ffi.os == "OSX" then
 	plat = require("./platform/osx");
 else
 	error("OS unknown: " .. ffi.os);
