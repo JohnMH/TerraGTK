@@ -36,7 +36,7 @@ function activate()
 	file_item:set_submenu(filemenu);
 	menubar:append(file_item);
 
-	box = GTK.Box(GTK.Orientation.Veritical, 5);
+	box = GTK.Box(GTK.Orientation.Vertical, 5);
 	box:pack_start(menubar, false, false, 3);
 	win:add(box);
 
