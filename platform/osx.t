@@ -27,5 +27,5 @@ terralib.includepath = terralib.includepath ..
 	";/usr/local/include/atk-1.0";
 
 return {
-	lib_path = "/usr/local/lib/libgtk-3.so";
+	lib_path = "/usr/local/lib/libgtk-3.dylib";
 };
