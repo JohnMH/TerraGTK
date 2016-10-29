@@ -37,4 +37,6 @@ end
 
 win:connect("delete-event", window_delete:getpointer());
 
+builder:unref();
+
 GTK.main();
