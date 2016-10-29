@@ -1468,6 +1468,13 @@ function GtkBuilder:get_object(name)
 	end
 end
 
+function GtkBuilder:set_app(app)
+	if self._cobj == nil then return; end
+	if not app or app._cobj == nil then return; end
+
+	C.gtk_builder_set_application(GTK_BUILDER(self._cobj), G_APPLICATION(app._cobj));	
+end
+
 GTK.Builder = GtkBuilder;
 GTK.GtkBuilder = GtkBuilder;
 
