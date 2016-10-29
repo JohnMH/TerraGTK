@@ -91,6 +91,10 @@ function GTK_MENU_SHELL(obj)
 	return terralib.cast(&C.GtkMenuShell, obj);
 end
 
+function GTK_BUILDER(obj)
+	return terralib.cast(&C.GtkBuilder, obj);
+end
+
 --Useful when running from the Terra REPL or running a script
 function GTK.loadlib()
 	terralib.linklibrary(plat.lib_path);
@@ -1418,5 +1422,53 @@ end
 
 GTK.GtkWindow = GtkWindow;
 GTK.Window = GtkWindow;
+
+--BUILDER
+
+local GtkBuilder = {};
+GtkBuilder.__index = GtkBuilder;
+
+setmetatable(GtkBuilder, {
+	__index = GObject,
+	__call = _call_gobject
+});
+
+function GtkBuilder:_init(un)
+	if type(un) == "cdata" then
+		self._cobj = un;
+		return;
+	end
+
+	self._cobj = C.gtk_builder_new();
+end
+
+function GtkBuilder.new_from_file(file)
+	local tmpBuilder = C.gtk_builder_new_from_file(file);
+	if tmpBuilder == nil then
+		return nil;
+	else
+		return GtkBuilder(tmpBuilder);
+	end
+end
+
+function GtkBuilder:add_from_file(file_name)
+	if self._cobj == nil then return; end
+	
+	return C.gtk_builder_add_from_file(GTK_BUILDER(self._cobj), file_name, nil);
+end
+
+function GtkBuilder:get_object(name)
+	if self._cobj == nil then return nil; end
+	
+	local reted = C.gtk_builder_get_object(GTK_BUILDER(self._cobj), name);
+	if reted == nil then
+		return nil;
+	else
+		return GtkWidget(reted);
+	end
+end
+
+GTK.Builder = GtkBuilder;
+GTK.GtkBuilder = GtkBuilder;
 
 return GTK;
