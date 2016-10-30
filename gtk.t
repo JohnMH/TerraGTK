@@ -107,6 +107,10 @@ function GTK_ENTRY(obj)
 	return terralib.cast(&C.GtkEntry, obj);
 end
 
+function GTK_FILE_CHOOSER(obj)
+	return terralib.cast(&C.GtkFileChooser, obj);
+end
+
 --Useful when running from the Terra REPL or running a script
 function GTK.loadlib()
 	terralib.linklibrary(plat.lib_path);
@@ -687,6 +691,37 @@ end
 
 GTK.GtkBox = GtkBox;
 GTK.Box = GtkBox;
+
+GtkFileChooserButton = {};
+GtkFileChooserButton.__index = GtkFileChooserButton;
+
+setmetatable(GtkFileChooserButton, {
+	__index = GtkBox,
+	__call = _call_gobject
+});
+
+function GtkFileChooserButton:_init(cobj)
+	if cobj ~= nil then
+		self._cobj = cobj;
+	end
+
+	self._cobj = C.gtk_file_chooser_button_new("Choose a file", C.GTK_FILE_CHOOSER_ACTION_OPEN);
+end
+
+function GtkFileChooserButton:get_file()
+	if self._cobj == nil then return nil; end
+
+	return ffi.string(C.gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(self._cobj)));
+end
+
+function GtkFileChooserButton:set_file(file)
+	if self._cobj == nil then return nil; end
+
+	C.gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(self._cobj), file);
+end
+
+GTK.GtkFileChooserButton = GtkFileChooserButton;
+GTK.FileChooserButton = GtkFileChooserButton;
 
 GtkMenuShell = {};
 GtkMenuShell.__index = GtkMenuShell;
