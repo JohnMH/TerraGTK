@@ -103,6 +103,10 @@ function GTK_CHECK_BUTTON(obj)
 	return terralib.cast(&C.GtkCheckButton, obj);
 end
 
+function GTK_ENTRY(obj)
+	return terralib.cast(&C.GtkEntry, obj);
+end
+
 --Useful when running from the Terra REPL or running a script
 function GTK.loadlib()
 	terralib.linklibrary(plat.lib_path);
