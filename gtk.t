@@ -1104,6 +1104,18 @@ function GtkToggleButton:_init(cobj)
 	self._cobj = C.gtk_toggle_button_new();
 end
 
+function GtkToggleButton:get_active()
+	if self._cobj == nil then return false; end
+
+	return not not C.gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(self._cobj));
+end
+
+function GtkToggleButton:set_active(isSet)
+	if self._cobj == nil then return; end
+
+	C.gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(self._cobj), not not isSet);
+end
+
 GTK.ToggleButton = GtkToggleButton;
 GTK.GtkToggleButton = GtkToggleButton;
 
