@@ -95,6 +95,14 @@ function GTK_BUILDER(obj)
 	return terralib.cast(&C.GtkBuilder, obj);
 end
 
+function GTK_TOGGLE_BUTTON(obj)
+	return terralib.cast(&C.GtkToggleButton, obj);
+end
+
+function GTK_CHECK_BUTTON(obj)
+	return terralib.cast(&C.GtkCheckButton, obj);
+end
+
 --Useful when running from the Terra REPL or running a script
 function GTK.loadlib()
 	terralib.linklibrary(plat.lib_path);
@@ -1079,6 +1087,46 @@ end
 GTK.GtkButton = GtkButton;
 GTK.Button = GtkButton;
 
+local GtkToggleButton = {};
+GtkToggleButton.__index = GtkToggleButton;
+
+setmetatable(GtkToggleButton, {
+	__index = GtkButton,
+	__call = _call_gobject
+});
+
+function GtkToggleButton:_init(cobj)
+	if cobj ~= nil then
+		self._cobj = cobj;
+		return;
+	end
+
+	self._cobj = C.gtk_toggle_button_new();
+end
+
+GTK.ToggleButton = GtkToggleButton;
+GTK.GtkToggleButton = GtkToggleButton;
+
+local GtkCheckButton = {};
+GtkCheckButton.__index = GtkCheckButton;
+
+setmetatable(GtkCheckButton, {
+	__index = GtkToggleButton,
+	__call = _call_gobject
+});
+
+function GtkCheckButton:_init(cobj)
+	if cobj ~= nil then
+		self._cobj = cobj;
+		return;
+	end
+
+	self._cobj = C.gtk_check_button_new();
+end
+
+GTK.CheckButton = GtkCheckButton;
+GTK.GtkCheckButton = GtkCheckButton;
+
 local WindowType = {};
 WindowType.TopLevel = C.GTK_WINDOW_TOPLEVEL;
 WindowType.Popup = C.GTK_WINDOW_POPUP;
@@ -1471,6 +1519,8 @@ end
 function GtkBuilder:set_app(app)
 	if self._cobj == nil then return; end
 	if not app or app._cobj == nil then return; end
+
+	print("Setting app")
 
 	C.gtk_builder_set_application(GTK_BUILDER(self._cobj), GTK_APPLICATION(app._cobj));	
 end
