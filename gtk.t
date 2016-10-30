@@ -711,7 +711,7 @@ end
 function GtkFileChooserButton:get_file()
 	if self._cobj == nil then return nil; end
 
-	return ffi.string(C.gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(self._cobj)));
+	return C.gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(self._cobj));
 end
 
 function GtkFileChooserButton:set_file(file)
