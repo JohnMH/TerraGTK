@@ -903,6 +903,26 @@ end
 GTK.GtkBin = GtkBin;
 GTK.Bin = GtkBin;
 
+local GtkSearchBar = {};
+GtkSearchBar.__index = GtkSearchBar;
+
+setmetatable(GtkSearchBar, {
+	__index = GtkBin,
+	__call = _call_gobject
+});
+
+function GtkSearchBar:_init(cobj)
+	if type(cobj) == "cdata" then
+		self._cobj = cobj;
+		return;
+	end
+
+	self._cobj = C.gtk_search_bar_new();
+end
+
+GTK.SearchBar = GtkSearchBar;
+GTK.GtkSearchBar = GtkSearchBar;
+
 local GtkMenuItem = {};
 GtkMenuItem.__index = GtkMenuItem;
 
