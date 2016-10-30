@@ -587,6 +587,38 @@ end
 GTK.GtkContainer = GtkContainer;
 GTK.Container = GtkContainer;
 
+GtkEntry = {};
+GtkEntry.__index = GtkEntry;
+
+setmetatable(GtkEntry, {
+	__index = GtkWidget,
+	__call = _call_gobject
+});
+
+function GtkEntry:_init(cobj)
+	if cobj ~= nil then
+		self._cobj = cobj;
+		return;
+	end
+
+	self._cobj = C.gtk_entry_new();
+end
+		
+function GtkEntry:get_text()
+	if self._cobj == nil then return; end
+	
+	return C.gtk_entry_get_text(GTK_ENTRY(self._cobj));
+end
+
+function GtkEntry:set_text(txt)
+	if self._cobj == nil then return; end
+	
+	C.gtk_entry_set_text(GTK_ENTRY(self._cobj), txt);
+end
+
+GTK.GtkEntry = GtkEntry;
+GTK.Entry = GtkEntry;
+
 GtkBox = {};
 GtkBox.__index = GtkBox;
 
